@@ -1,31 +1,27 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.types import *
 from pyspark.sql.window import Window
 from pyspark.sql.functions import col, unix_timestamp, lag, when, sha2, concat_ws, sum as spark_sum
 
-from SchemaDefinition import get_schema
+from main.SchemaDefinition import get_schema
+
 
 def load_data(ss, path, schema, from_file):
     if from_file:
-        return spark.read.option("header", "true").schema(schema).csv(path)
+        return ss.read.option("header", "true").schema(schema).csv(path)  # ss 사용
     else:
         raise ValueError("load_data_error")
 
 
-def pre_processing_data(ss, raw_data_path, prev_data_path, schema, session_timeout):
-
+def pre_processing_data(ss, raw_data_path, prev_data_path, schema, session_timeout, from_file=True):
     raw_data = load_data(ss, raw_data_path, schema, from_file)
     prev_data = load_data(ss, prev_data_path, schema, from_file)
-
     # 데이터 병합 및 날짜 타입 변경
     df = raw_data.unionAll(prev_data)
     df = df.withColumn("event_time", col("event_time").cast("timestamp"))
-
     return df
 
 
 def assign_session_id(df, session_timeout):
-
     window_spec = Window.partitionBy("user_id").orderBy("event_time")
 
     # 필요 컬럼 생성
@@ -43,7 +39,6 @@ def assign_session_id(df, session_timeout):
                         spark_sum("new_session").over(window_spec.rowsBetween(Window.unboundedPreceding, 0))) \
         .withColumn("session_id",
                         sha2(concat_ws("_", col("user_id"), col("session_number")), 256))
-
     return df
 
 
