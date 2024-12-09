@@ -1,8 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.window import Window
 from pyspark.sql.functions import col, unix_timestamp, lag, when, sha2, concat_ws, sum as spark_sum
-
-from main.SchemaDefinition import get_schema
+from main.schemas.common_schemas import EVENT_SCHEMA
 
 
 def load_data(ss, path, schema, from_file):
@@ -49,7 +48,7 @@ if __name__ == "__main__":
         .getOrCreate()
 
     # 스키마 가져오기
-    schema = get_schema()
+    schema = EVENT_SCHEMA
 
     # 데이터 경로
     from_file = True

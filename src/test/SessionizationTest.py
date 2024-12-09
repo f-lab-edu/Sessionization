@@ -1,8 +1,7 @@
 import pytest
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, FloatType
+from pyspark.sql import SparkSession,DataFrame
 from main.Sessionization import assign_session_id
-from main.SchemaDefinition import get_schema
+from main.schemas.common_schemas import EVENT_SCHEMA
 
 
 # SparkSession fixture
@@ -17,7 +16,7 @@ def spark():
 # 샘플 데이터 생성
 @pytest.fixture
 def sample_data(spark):
-    schema = get_schema()
+    schema = EVENT_SCHEMA
     data = [
         # 같은 유저, 동일한 세션 (30분 이내)
         ("2019-10-10 04:00:00", "view", "product_111", "category_211", "brand1", "samsung", 257.15, "user_1"),
