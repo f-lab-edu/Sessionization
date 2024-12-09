@@ -1,0 +1,3 @@
+pyspark==3.5.3
+pytest==7.4.8
+chispa==0.9.1
