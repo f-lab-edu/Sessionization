@@ -34,10 +34,10 @@ def sample_data(spark):
 
 # assign_session_id 테스트
 def test_assign_session_id(spark, sample_data):
-    session_timeout = 1800  # 30분
+    SESSION_TIMEOUT = 1800  # 30분
 
     # 테스트 수행
-    result_df = assign_session_id(sample_data, session_timeout)
+    result_df = assign_session_id(sample_data, SESSION_TIMEOUT)
 
     # 필요한 컬럼 선택
     result_df = result_df.select("user_id", "event_time", "prev_event_time", "time_diff", "session_id")
