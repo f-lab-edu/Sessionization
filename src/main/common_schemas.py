@@ -9,5 +9,6 @@ EVENT_SCHEMA = StructType([
         StructField("category_code", StringType(), True),
         StructField("brand", StringType(), True),
         StructField("price", StringType(), True),
-        StructField("user_id", StringType(), False)
+        StructField("user_id", StringType(), False),
+        StructField("session_id", StringType(), True)
 ])
