@@ -33,12 +33,18 @@ def assign_session_id(df, SESSION_TIMEOUT) -> DataFrame:
     df = df.withColumn("session_start_time", spark_min("event_time").over(session_window_spec))
 
     # session_id 부여
-    session_id_expr = when(
-        (col("time_diff").isNull()) | (col("time_diff") > SESSION_TIMEOUT),
-        sha2(concat_ws("_", col("session_start_time"), col("user_id")), 256)
-    ).otherwise(None)
+    session_id_expr = (
+        when(
+            col("session_id").isNotNull(),  # 이전 데이터에서 session_id가 이미 있는 경우
+            col("session_id")
+        )
+        .when(
+            (col("time_diff").isNull()) | (col("time_diff") > SESSION_TIMEOUT),  # 새로운 session_id가 부여되는 경우
+            sha2(concat_ws("_", col("session_start_time"), col("user_id")), 256)
+        )
+        .otherwise(None)
+    )
 
-    # session_id 컬럼 생성 및 누락된 값을 채움
     df = df.withColumn(
         "session_id",
         last(session_id_expr, True).over(window_spec.rowsBetween(Window.unboundedPreceding, 0))
