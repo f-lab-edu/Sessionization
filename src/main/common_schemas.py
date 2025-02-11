@@ -1,8 +1,7 @@
 from pyspark.sql.types import StructType, StructField, StringType
 
-# 다중 정적 스키마 정의
-class SchemaProvider:
-    EVENT_SCHEMA = StructType([
+# 단일 정적 스키마 정의
+EVENT_SCHEMA = StructType([
         StructField("event_time", StringType(), False),
         StructField("event_type", StringType(), False),
         StructField("product_id", StringType(), True),
@@ -10,5 +9,6 @@ class SchemaProvider:
         StructField("category_code", StringType(), True),
         StructField("brand", StringType(), True),
         StructField("price", StringType(), True),
-        StructField("user_id", StringType(), False)
-    ])
+        StructField("user_id", StringType(), False),
+        StructField("session_id", StringType(), True)
+])
